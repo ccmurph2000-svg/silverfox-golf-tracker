@@ -90,7 +90,7 @@ COUNTY_COORDS = {
     'Wexford': (52.33, -6.46), 'Wicklow': (53.00, -6.30)
 }
 
-# 1. Master Course List Loader using pre-computed CSV coordinates
+# 1. Master Course List Loader with Alphabetical Sorting & Pre-computed CSV Coordinates
 @st.cache_data
 def load_master_courses():
     try:
@@ -118,6 +118,9 @@ def load_master_courses():
     df['Course Name'] = df['Course Name'].astype(str).str.strip()
     df['County'] = df['County'].astype(str).str.strip()
     df['Province'] = df.get('Province', pd.Series(['Ireland'] * len(df))).astype(str).str.strip()
+    
+    # Sort courses alphabetically by Course Name
+    df = df.sort_values(by='Course Name', ascending=True).reset_index(drop=True)
     df['Course ID'] = range(1, len(df) + 1)
     
     df['lat'] = pd.to_numeric(df.get('lat', None), errors='coerce')
@@ -399,10 +402,13 @@ col_map, col_controls = st.columns([1.5, 1])
 with col_controls:
     st.markdown("### ⛳ Log Completed Courses")
     
+    # Courses are loaded alphabetically for the multiselect list
+    course_options = df_courses["Course Name"].tolist()
+    
     selected_courses = st.multiselect(
         "Search and select completed courses:",
-        options=df_courses["Course Name"].tolist(),
-        default=[c for c in ["Royal County Down Golf Club", "K Club (Palmer North)", "Portmarnock Golf Club"] if c in df_courses["Course Name"].values],
+        options=course_options,
+        default=[c for c in ["Royal County Down Golf Club", "K Club (Palmer North)", "Portmarnock Golf Club"] if c in course_options],
         key="golf_courses_selector"
     )
 
