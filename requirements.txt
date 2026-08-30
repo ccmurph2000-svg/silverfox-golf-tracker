@@ -1,1 +1,6 @@
-python -m streamlit run app.py
+streamlit 
+pandas 
+numpy 
+pydeck 
+openpyxl 
+reportlab 
